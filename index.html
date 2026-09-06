@@ -135,7 +135,7 @@
   </ul>
 
   <button class="cta-button" id="ctaBtn">Ver oferta na Shopee →</button>
-  <p class="cta-sub">Você será redirecionada(o) para a Shopee</p>
+  <p class="cta-sub" id="ctaSub">Você será redirecionada(o) para a Shopee em <span id="countdown">2</span>s...</p>
 
   <p class="disclaimer">Esta página é um link de divulgação. A compra e a entrega são feitas diretamente pela Shopee, conforme os termos e condições da plataforma.</p>
 
@@ -162,15 +162,35 @@ src="https://www.facebook.com/tr?id=1601780591305026&ev=PageView&noscript=1"
 
 <script>
   var DESTINO = "https://s.shopee.com.br/2gAvJKhSA0";
-  document.getElementById('ctaBtn').addEventListener('click', function (e) {
-    e.preventDefault();
+  var redirected = false;
+
+  function goToShopee() {
+    if (redirected) return;
+    redirected = true;
     if (typeof fbq === 'function') {
       fbq('track', 'InitiateCheckout', {content_name: 'Kit Calcado Infantil'});
     }
     setTimeout(function () {
       window.location.href = DESTINO;
-    }, 250);
+    }, 200);
+  }
+
+  document.getElementById('ctaBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    goToShopee();
   });
+
+  // Auto-redireciona apos a pessoa ver a pagina, dando tempo do Pixel disparar
+  var secondsLeft = 2;
+  var countdownEl = document.getElementById('countdown');
+  var timer = setInterval(function () {
+    secondsLeft -= 1;
+    if (countdownEl) countdownEl.textContent = secondsLeft;
+    if (secondsLeft <= 0) {
+      clearInterval(timer);
+      goToShopee();
+    }
+  }, 1000);
 </script>
 
 </body>
